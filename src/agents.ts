@@ -1,50 +1,64 @@
 import "dotenv/config";
 import path from "path";
-import { initializeAgentExecutorWithOptions } from "langchain/agents";
 import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
+import { AgentExecutor, createToolCallingAgent } from "langchain/agents";
 import { NestJSTestGeneratorTool } from "./tools/NestJSTestGeneratorTool";
+import { SystemMessage } from "@langchain/core/messages";
+import { ChatPromptTemplate } from "@langchain/core/prompts";
 
 /**
  * Função exportável para uso programático.
  */
 export async function runTestAgent(filePath: string): Promise<string> {
+
   const absolutePath = path.resolve(filePath);
 
+  // 1. Inicializar o modelo Gemini
   const model = new ChatGoogleGenerativeAI({
-    model: "gemini-pro",
+    model: "gemini-2.0-flash",
     apiKey: process.env.GOOGLE_API_KEY,
     maxOutputTokens: 2048,
+    temperature: 0.7,
+    topK: 40,
+    topP: 0.9,
   });
 
+  // 2. Definir as ferramentas
   const tools = [new NestJSTestGeneratorTool()];
 
-  const executor = await initializeAgentExecutorWithOptions(tools, model, {
-    agentType: "openai-functions", // Funciona com Gemini também
-    verbose: true,
+  // 3. Criar o prompt template corretamente
+  const prompt = ChatPromptTemplate.fromMessages([
+    ["system", `Você é um especialista em testes NestJS. 
+      Gere testes unitários completos usando Jest para o arquivo em {input}.
+      Inclua:
+      - Casos de teste para todas funcionalidades principais
+      - Mocks adequados para dependências
+      - Asserções claras e descritivas
+      - Boas práticas de teste do NestJS`],
+    ["human", "{input}"],
+    ["placeholder", "{agent_scratchpad}"],
+  ]);
+
+
+  // 4. Criar o agente com a nova API
+  const agent = await createToolCallingAgent({
+    llm: model,
+    tools,
+    prompt,
   });
 
-  const result = await executor.call({
-    input: `Gere um teste unitário Jest para o arquivo NestJS localizado em: ${absolutePath}`,
+  // 5. Criar o executor do agente
+  const executor = new AgentExecutor({
+    agent,
+    tools,
+    verbose: true,
+     returnIntermediateSteps: false,
+  });
+
+  // 6. Executar o agente
+  const result = await executor.invoke({
+    input: `Por favor, gere testes unitários para o arquivo em ${absolutePath}`,
   });
 
   return result.output;
-}
-
-/**
- * Execução direta via CLI
- */
-if (process.argv[1] === __filename) {
-  const file = process.argv[2];
-
-  if (!file) {
-    console.error("❌ Você deve fornecer o caminho de um arquivo NestJS como argumento.");
-    process.exit(1);
-  }
-
-  runTestAgent(file)
-    .then((output) => console.log("🧪 Resultado:\n", output))
-    .catch((err) => {
-      console.error("Erro ao executar agente:", err);
-      process.exit(1);
-    });
 }
