@@ -1,0 +1,1 @@
+node --require esbuild-register src/cli.ts ./test/nestjs.service.ts
