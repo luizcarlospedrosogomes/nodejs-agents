@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "target": "ES6",
+    "module": "CommonJS",
+    "declaration": true,
+    "outDir": "./dist",
+    "strict": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true
+    
+  },
+  "include": ["src/**/*", "test/nestjs.service.ts"],
+  "exclude": ["test", "node_modules", "dist"]
+}
