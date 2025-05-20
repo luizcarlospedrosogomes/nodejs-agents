@@ -21,7 +21,7 @@ export class OdataTestGeneratorTool extends Tool {
     constructor(config: GeneratorToolConfig = {}) {
         super();
         if (!config.llm) {
-        throw new Error("Um modelo LLM deve ser fornecido para a ferramenta");
+          throw new Error("Um modelo LLM deve ser fornecido para a ferramenta");
         }
         this.model = config.llm;
     }
@@ -39,15 +39,16 @@ export class OdataTestGeneratorTool extends Tool {
             }
 
             const code = await fs.readFile(absolutePath, "utf-8");
-            const outputPath = absolutePath.replace(/\.ts$/, ".spec.ts");
+            const outputPath = absolutePath.replace(/\.xml$/, ".spec.ts");
 
             const promptMessage = new HumanMessage(
                 `
-                Você é um especialista em testes automatizados usando Jest. Gere um teste usando Jest para verificar o metadata de um serviço OData.
+                Você é um especialista em testes automatizados usando nodejs. 
+                Gere um teste usando node:test para verificar o metadata de um serviço OData.
 
-                O serviço OData está disponível em: http://localhost:4004/odata/v4/myservice/$metadata
+                O serviço OData está disponível em: process.env.SAP_BASE_URL/$metadata
 
-                Use axios para buscar o metadata e xml2js para parsear o XML.
+                Use fecth do nodejs para buscar o metadata e xml2js para parsear o XML.
 
                 O teste deve:
                 
