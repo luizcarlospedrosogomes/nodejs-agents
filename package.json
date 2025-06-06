@@ -26,7 +26,8 @@
     "langchain": "^0.3.24"
   },
   "dependencies": {
-    "fs-extra": "^11.3.0"
+    "fs-extra": "^11.3.0",
+    "xml2js": "^0.6.2"
   },
   "devDependencies": {
     "@types/fs-extra": "^11.0.4",
@@ -35,6 +36,7 @@
     "@types/node-fetch": "^2.6.12",
     "@types/retry": "^0.12.5",
     "@types/uuid": "^10.0.0",
+    "@types/xml2js": "^0.4.14",
     "esbuild": "^0.25.4",
     "esbuild-register": "^3.6.0",
     "nodemon": "^3.1.10",
