@@ -14,13 +14,9 @@ interface Config {
   tools?: string[]; // ex: ['nestjs', 'odata']
 }
 
-export async function runTestAgent(
-  filePath: string,
-  config: Config = {},
-  args: any
-): Promise<string> {
+export async function runTestAgent(filePath: string, config: Config = {}, args: any): Promise<string> {
   const absolutePath = path.resolve(filePath);
-
+ 
   // Inicializa o LLM
   let llm;
 
@@ -43,7 +39,7 @@ export async function runTestAgent(
         apiKey: config.api_key || process.env.GOOGLE_API_KEY,
         model: config.modelName ||"gemini-2.0-flash",
         temperature: 0.7,
-       // maxOutputTokens: 4096,
+        maxOutputTokens: 32000,
       });
       break;
   }
@@ -71,8 +67,18 @@ export async function runTestAgent(
 
 
   // Prompt genérico para o agente
-  const prompt = ChatPromptTemplate.fromMessages([
+  /*const prompt = ChatPromptTemplate.fromMessages([
     ["system", `Você é um agente para geração de script de testes. Use a ferramenta '${toolNameUsed}' `],
+    //["human", "{input}"],
+     ["human", `Chame a ferramenta com este caminho: ${absolutePath}`],
+    ["placeholder", "{agent_scratchpad}"],
+  ]);*/
+  const prompt = ChatPromptTemplate.fromMessages([
+  ["system", `Você é um agente especializado em geração de testes automatizados.
+
+  Use exclusivamente a ferramenta '${toolNameUsed}' para processar o caminho de um arquivo XML que será fornecido como input.
+
+  Não tente escrever o teste você mesmo — apenas chame a ferramenta passando o caminho como argumento.`],
     ["human", "{input}"],
     ["placeholder", "{agent_scratchpad}"],
   ]);
@@ -90,8 +96,10 @@ export async function runTestAgent(
     verbose: true,
   });
 
+  
   const result = await executor.invoke({
-    input: `Gere os testes para o arquivo ${absolutePath}`,
+    //input: `Gere os testes para o arquivo ${absolutePath}`,
+    input: absolutePath,
   });
 
   return result.output;

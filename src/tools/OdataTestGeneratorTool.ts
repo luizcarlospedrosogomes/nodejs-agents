@@ -28,6 +28,7 @@ export class OdataTestGeneratorTool extends Tool {
 
     async _call(filePath: string): Promise<string> {
         try {
+
             const absolutePath = path.resolve(filePath);
             
             if (!(await fs.pathExists(absolutePath))) {
@@ -39,6 +40,7 @@ export class OdataTestGeneratorTool extends Tool {
             }
 
             const code = await fs.readFile(absolutePath, "utf-8");
+            //console.log(code)
             const outputPath = absolutePath.replace(/\.xml$/, ".spec.ts");
 
             const promptMessage = new HumanMessage(
