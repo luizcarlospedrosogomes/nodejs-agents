@@ -32,10 +32,7 @@ jobs:
       - run: cat $NPM_CONFIG_USERCONFIG
       - name: Debug token (não deixe em produção)
         run: echo "TOKEN=${{ secrets.NPM_TOKEN }}"
-      - name: Create .npmrc
-        run: |
-          echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc    
-      - run: cat ~/.npmrc
+      
       - run: npm publish --access public
       
         env:
