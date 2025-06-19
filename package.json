@@ -15,7 +15,7 @@
     "postinstall": "node dist/scripts/postinstall.js",
     "start": "node dist/index.js",
     "test": "node --require esbuild-register src/cli/cli.ts generate ./test/nestjs.service.ts",
-    "debug": "node --require esbuild-register src/cli/cli.ts generate ./test/sprolims-lab-serv-$metadata.xml --tool=odata_test_generator --template=typescript_template"
+    "debug": "node --require esbuild-register src/cli/cli.ts generate ./test/sprolims-lab-serv-$metadata.xml --tool=odata_test_generator --template=typescript_template --force"
   },
   "exports": {
     ".": {

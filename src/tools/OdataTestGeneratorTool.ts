@@ -6,7 +6,6 @@ import { parseStringPromise } from "xml2js";
 
 import os from "os";
 
-
 interface LLMModel {
   invoke(messages: HumanMessage[]): Promise<{ content: string } | any>;
 }
@@ -31,7 +30,12 @@ export class OdataTestGeneratorTool extends Tool {
   }
 
   async _call(input: string): Promise<string> {
-    const [filePath, template = "default"] = input.split("|");
+    const [filePath, rest = "default"] = input.split("|");
+    const parts = rest.trim().split(/\s+/);
+    const template = parts[0];
+    const flags = parts.slice(1);
+
+    const hasForceFlag = flags.includes("--force");
     try {
       const absolutePath = path.resolve(filePath);
 
@@ -70,8 +74,12 @@ export class OdataTestGeneratorTool extends Tool {
         });
 
         const propertiesText = JSON.stringify(properties, null, 2);
-        const prompt = this.getPromptForTemplate(template, entityName, propertiesText);
-        console.log("🧠 Prompt final para LLM:\n", prompt);
+        const prompt = this.getPromptForTemplate(
+          template,
+          entityName,
+          propertiesText
+        );
+
         const promptMessage = new HumanMessage(prompt);
         const res = await this.model.invoke([promptMessage]);
 
@@ -87,6 +95,13 @@ export class OdataTestGeneratorTool extends Tool {
           outputPath = absolutePath.replace(/\.xml$/, `_${entityName}.test.js`);
         } else {
           outputPath = absolutePath.replace(/\.xml$/, `_${entityName}.test.ts`);
+        }
+
+        if ((await fs.pathExists(outputPath)) && !hasForceFlag) {
+          console.log(
+            `⚠️ Arquivo já existe e será ignorado (use --force para sobrescrever): ${outputPath}`
+          );
+          continue;
         }
 
         await fs.writeFile(outputPath, testCode);
@@ -127,7 +142,12 @@ export class OdataTestGeneratorTool extends Tool {
     return "";
   }
 
-  private getPromptForTemplate(templateName: string, entityName: string, propertiesText: string, projectName = "default"): string {
+  private getPromptForTemplate(
+    templateName: string,
+    entityName: string,
+    propertiesText: string,
+    projectName = "default"
+  ): string {
     const configPath = path.join(
       process.platform === "win32"
         ? path.join(process.env.APPDATA || "", "agents")
@@ -170,7 +190,6 @@ export class OdataTestGeneratorTool extends Tool {
       .replace(/\$\{entityName\}/g, entityName)
       .replace(/\$\{propertiesText\}/g, propertiesText);
 
-    
     return content;
   }
 }

@@ -6,6 +6,7 @@ import { handleGenerate } from "./generateHandler";
 import { openConfigFile } from "./openConfigFile";
 import { getGlobalConfigPath } from "./getGlobalConfigPath";
 import { handleCreateTemplate } from "./createTemplateHandler";
+import { handleHelp } from "./help";
 
 const CONFIG_PATH = getGlobalConfigPath();
 
@@ -23,6 +24,11 @@ switch (command) {
     break;
   case "create-template":
     handleCreateTemplate(args, CONFIG_PATH);
+    break;
+  case "help":
+  case "--help":
+  case "-h":
+    handleHelp();
     break;
   default:
     console.error("❌ Comando inválido. Use 'config' ou 'generate'.");

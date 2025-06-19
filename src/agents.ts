@@ -14,9 +14,13 @@ interface Config {
   tools?: string[]; // ex: ['nestjs', 'odata']
 }
 
-export async function runTestAgent(filePath: string, config: Config = {}, args: any): Promise<string> {
+export async function runTestAgent(
+  filePath: string,
+  config: Config = {},
+  args: any
+): Promise<string> {
   const absolutePath = path.resolve(filePath);
- 
+
   // Inicializa o LLM
   let llm;
 
@@ -37,7 +41,7 @@ export async function runTestAgent(filePath: string, config: Config = {}, args: 
         throw new Error("Google API key is required");
       llm = new ChatGoogleGenerativeAI({
         apiKey: config.api_key || process.env.GOOGLE_API_KEY,
-        model: config.modelName ||"gemini-2.0-flash",
+        model: config.modelName || "gemini-2.0-flash",
         temperature: 0.7,
         maxOutputTokens: 32000,
       });
@@ -45,17 +49,22 @@ export async function runTestAgent(filePath: string, config: Config = {}, args: 
   }
 
   // Seleciona as ferramentas conforme config.tools, default para todas disponíveis
-  let selectedToolsNames = config.tools && config.tools.length > 0
-    ? config.tools
-    : Object.keys(toolFactory);
+  let selectedToolsNames =
+    config.tools && config.tools.length > 0
+      ? config.tools
+      : Object.keys(toolFactory);
 
   const toolsFromArgs = args
-  .filter((arg: any) => arg.startsWith("--tool="))
-  .map((arg: any) => arg.replace("--tool=", ""));
+    .filter((arg: any) => arg.startsWith("--tool="))
+    .map((arg: any) => arg.replace("--tool=", ""));
 
-  selectedToolsNames = selectedToolsNames.filter(tool => toolsFromArgs.includes(tool));
-  if(selectedToolsNames.length === 0){
-    throw new Error("Choose tool: odata_test_generator or nestjs_test_generator")
+  selectedToolsNames = selectedToolsNames.filter((tool) =>
+    toolsFromArgs.includes(tool)
+  );
+  if (selectedToolsNames.length === 0) {
+    throw new Error(
+      "Choose tool: odata_test_generator or nestjs_test_generator"
+    );
   }
 
   const templateArg = args
@@ -70,12 +79,22 @@ export async function runTestAgent(filePath: string, config: Config = {}, args: 
     return new ToolClass({ llm });
   });
 
+  const extraArgs = args
+    .filter((arg: any) => arg.startsWith("--"))
+    .filter(
+      (arg: any) => !arg.startsWith("--tool=") && !arg.startsWith("--template=")
+    )
+    .join(" ");
+
   const prompt = ChatPromptTemplate.fromMessages([
-  ["system", `Você é um agente especializado em geração de testes automatizados.
+    [
+      "system",
+      `Você é um agente especializado em geração de testes automatizados.
 
   Use exclusivamente a ferramenta '${toolNameUsed}' para processar o caminho de um arquivo XML que será fornecido como input.
 
-  Não tente escrever o teste você mesmo — apenas chame a ferramenta passando o caminho como argumento.`],
+  Não tente escrever o teste você mesmo — apenas chame a ferramenta passando o caminho como argumento.`,
+    ],
     ["human", "{input}"],
     ["placeholder", "{agent_scratchpad}"],
   ]);
@@ -93,10 +112,10 @@ export async function runTestAgent(filePath: string, config: Config = {}, args: 
     verbose: true,
   });
 
-  
+  const inputStr = `${absolutePath}|${template} ${extraArgs}`;
+
   const result = await executor.invoke({
-    
-    input: `${absolutePath}|${template}`,
+    input: inputStr,
   });
 
   return result.output;
