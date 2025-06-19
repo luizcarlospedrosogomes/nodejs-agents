@@ -11,7 +11,7 @@ const templatesTargetDir = path.join(configDir, "templates");
 
 // Caminho relativo ao pacote instalado
 //const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const __dirname = path.resolve();
+//const __dirname = path.resolve();
 const templatesSourceDir = path.resolve(__dirname, "../templates");
 
 async function postInstall() {
