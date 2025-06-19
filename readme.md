@@ -11,3 +11,7 @@ node --require esbuild-register src/cli.ts generate ./test/nestjs.service.ts
 
 # gemini api key
 - https://aistudio.google.com/app/apikey 
+
+# version
+npm version patch -m "chore(release): %s"
+git push --follow-tags
