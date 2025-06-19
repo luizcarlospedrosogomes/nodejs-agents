@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "main": "./dist/index.js",
   "bin": {
-    "agents": "./dist/cli/cli.js"
+    "agents": "./dist/src/cli/cli.js"
   },
   "files": [
     "dist"
@@ -19,7 +19,7 @@
   },
   "exports": {
     ".": {
-      "import": "./dist/index.js"
+      "import": "./dist/src/index.js"
     }
   },
   "peerDependencies": {
