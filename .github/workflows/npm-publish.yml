@@ -27,7 +27,8 @@ jobs:
           registry-url: https://registry.npmjs.org/
       - run: npm ci
       - run: npm run build
-      - run: echo ${{secrets.NPM_TOKEN}}      
+      - run: echo ${{secrets.NPM_TOKEN}}  
+      - run: cat $NPM_CONFIG_USERCONFIG    
       - run: npm publish --access public
       
         env:

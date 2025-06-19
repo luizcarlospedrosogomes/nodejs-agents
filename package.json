@@ -1,7 +1,11 @@
 {
   "name": "agents",
   "version": "0.1.0",
+  "private": false,
   "main": "./dist/index.js",
+  "publishConfig": {
+    "access": "public"
+  },
   "bin": {
     "agents": "./dist/src/cli/cli.js"
   },
