@@ -28,7 +28,10 @@ jobs:
       - run: npm ci
       - run: npm run build
       - run: echo ${{secrets.NPM_TOKEN}}  
-      - run: cat $NPM_CONFIG_USERCONFIG    
+      - run: cat $NPM_CONFIG_USERCONFIG
+      - name: Create .npmrc
+        run: |
+          echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc    
       - run: npm publish --access public
       
         env:
