@@ -32,6 +32,7 @@ jobs:
       - name: Create .npmrc
         run: |
           echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc    
+      - run: cat ~/.npmrc
       - run: npm publish --access public
       
         env:
