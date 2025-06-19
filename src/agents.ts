@@ -58,6 +58,11 @@ export async function runTestAgent(filePath: string, config: Config = {}, args: 
     throw new Error("Choose tool: odata_test_generator or nestjs_test_generator")
   }
 
+  const templateArg = args
+    .filter((arg: any) => arg.startsWith("--template="))
+    .map((arg: any) => arg.replace("--template=", ""));
+  const template = templateArg.length === 1 ? templateArg[0] : "";
+
   const toolNameUsed = selectedToolsNames[0];
   const tools = selectedToolsNames.map((toolName) => {
     const ToolClass = toolFactory[toolName];
@@ -65,14 +70,6 @@ export async function runTestAgent(filePath: string, config: Config = {}, args: 
     return new ToolClass({ llm });
   });
 
-
-  // Prompt genérico para o agente
-  /*const prompt = ChatPromptTemplate.fromMessages([
-    ["system", `Você é um agente para geração de script de testes. Use a ferramenta '${toolNameUsed}' `],
-    //["human", "{input}"],
-     ["human", `Chame a ferramenta com este caminho: ${absolutePath}`],
-    ["placeholder", "{agent_scratchpad}"],
-  ]);*/
   const prompt = ChatPromptTemplate.fromMessages([
   ["system", `Você é um agente especializado em geração de testes automatizados.
 
@@ -98,8 +95,8 @@ export async function runTestAgent(filePath: string, config: Config = {}, args: 
 
   
   const result = await executor.invoke({
-    //input: `Gere os testes para o arquivo ${absolutePath}`,
-    input: absolutePath,
+    
+    input: `${absolutePath}|${template}`,
   });
 
   return result.output;
