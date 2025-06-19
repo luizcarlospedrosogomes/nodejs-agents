@@ -9,6 +9,6 @@
     "allowSyntheticDefaultImports": true
     
   },
-  "include": ["src/**/*", "test/nestjs.service.ts"],
+  "include": ["src/**/*", "test/nestjs.service.ts", "scripts", "templates"],
   "exclude": ["test", "node_modules", "dist"]
 }

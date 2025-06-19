@@ -5,14 +5,23 @@ export function openConfigFile(args: any, configPath: string): void {
   // Cria o arquivo se ele não existir
   if (!fs.existsSync(configPath)) {
     const defaultConfig = {
-        "projects": [
+      projects: [
+        {
+          name: "default",
+          modelName: "gemini",
+          api_key: "",
+          templates: [
             {
-                "name": "default",
-                "modelName": "gemini",
-                "api_key": "",
-                "templates": []
-            }
-        ]
+              name: "typescript_template",
+              tool: "odata_test_generator"
+            },
+            {
+              name: "javascript_template",
+              tool: "odata_test_generator"
+            },
+          ],
+        },
+      ],
     };
     try {
       fs.writeFileSync(configPath, JSON.stringify(defaultConfig, null, 2));
@@ -37,7 +46,10 @@ export function openConfigFile(args: any, configPath: string): void {
 
   exec(command, (error) => {
     if (error) {
-      console.error("❌ Não foi possível abrir o arquivo de configuração:", error.message);
+      console.error(
+        "❌ Não foi possível abrir o arquivo de configuração:",
+        error.message
+      );
       process.exit(1);
     } else {
       console.log("📂 Arquivo de configuração aberto no editor padrão.");
