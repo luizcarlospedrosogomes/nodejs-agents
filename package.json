@@ -12,7 +12,7 @@
     "dev": "NODE_OPTIONS='--loader ts-node/esm --no-warnings' node src/index.ts",
     "dev:cli": "node src/cli.ts ./test/nestjs.service.ts",
     "build": "tsc && node dist/scripts/copy-templates.js",
-    "postinstall": "node dist/scripts/postinstall.js",
+    "postbuild": "node dist/scripts/postinstall.js",
     "start": "node dist/index.js",
     "test": "node --require esbuild-register src/cli/cli.ts generate ./test/nestjs.service.ts",
     "debug": "node --require esbuild-register src/cli/cli.ts generate ./test/odata-$metadata.xml --tool=odata_test_generator --template=typescript_template --force"
