@@ -19,6 +19,7 @@ jobs:
   publish-npm:
     needs: build
     runs-on: ubuntu-latest
+    environment: npm_token  
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -29,6 +30,8 @@ jobs:
       - run: npm run build
       - run: echo ${{secrets.NPM_TOKEN}}  
       - run: cat $NPM_CONFIG_USERCONFIG
+      - name: Debug token (não deixe em produção)
+        run: echo "TOKEN=${{ secrets.NPM_TOKEN }}"
       - name: Create .npmrc
         run: |
           echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc    
