@@ -6,12 +6,7 @@ import { parseStringPromise } from "xml2js";
 
 import os from "os";
 
-const TEMPLATES_DIR = path.join(
-  process.platform === "win32"
-    ? process.env.APPDATA || ""
-    : path.join(os.homedir(), ".config", "agents"),
-  "templates"
-);
+
 interface LLMModel {
   invoke(messages: HumanMessage[]): Promise<{ content: string } | any>;
 }
@@ -75,11 +70,8 @@ export class OdataTestGeneratorTool extends Tool {
         });
 
         const propertiesText = JSON.stringify(properties, null, 2);
-        const prompt = this.getPromptForTemplate(
-          template,
-          entityName,
-          propertiesText
-        );
+        const prompt = this.getPromptForTemplate(template, entityName, propertiesText);
+        console.log("🧠 Prompt final para LLM:\n", prompt);
         const promptMessage = new HumanMessage(prompt);
         const res = await this.model.invoke([promptMessage]);
 
@@ -138,7 +130,7 @@ export class OdataTestGeneratorTool extends Tool {
   private getPromptForTemplate(templateName: string, entityName: string, propertiesText: string, projectName = "default"): string {
     const configPath = path.join(
       process.platform === "win32"
-        ? process.env.APPDATA || ""
+        ? path.join(process.env.APPDATA || "", "agents")
         : path.join(os.homedir(), ".config", "agents"),
       "config.json"
     );
@@ -177,5 +169,8 @@ export class OdataTestGeneratorTool extends Tool {
     return content
       .replace(/\$\{entityName\}/g, entityName)
       .replace(/\$\{propertiesText\}/g, propertiesText);
+
+    
+    return content;
   }
 }
