@@ -32,11 +32,15 @@ export function openConfigFile(args: any, configPath: string): void {
     }
   }
 
+   const isWSL = fs.existsSync("/proc/version") && fs.readFileSync("/proc/version", "utf8").toLowerCase().includes("microsoft");
   const platform = process.platform;
 
   let command: string;
 
-  if (platform === "win32") {
+  if (isWSL) {
+    // VS Code precisa estar acessível via 'code'
+    command = `code "${configPath}"`;
+  } else if (platform === "win32") {
     command = `start "" "${configPath}"`;
   } else if (platform === "darwin") {
     command = `open "${configPath}"`;
