@@ -5,6 +5,7 @@ import { HumanMessage } from "@langchain/core/messages";
 import { parseStringPromise } from "xml2js";
 
 import os from "os";
+import { getGlobalConfigPath } from "../cli/getGlobalConfigPath";
 
 interface LLMModel {
   invoke(messages: HumanMessage[]): Promise<{ content: string } | any>;
@@ -142,18 +143,8 @@ export class OdataTestGeneratorTool extends Tool {
     return "";
   }
 
-  private getPromptForTemplate(
-    templateName: string,
-    entityName: string,
-    propertiesText: string,
-    projectName = "default"
-  ): string {
-    const configPath = path.join(
-      process.platform === "win32"
-        ? path.join(process.env.APPDATA || "", "agents")
-        : path.join(os.homedir(), ".config", "agents"),
-      "config.json"
-    );
+  private getPromptForTemplate( templateName: string, entityName: string, propertiesText: string, projectName = "default"): string {
+     const configPath = getGlobalConfigPath();
 
     if (!fs.existsSync(configPath)) {
       throw new Error(
@@ -178,12 +169,12 @@ export class OdataTestGeneratorTool extends Tool {
       );
     }
 
-    const templatePath = template.file;
-
+    //const templatePath = template.file;
+    const templatePath = path.join(__dirname, "../..", "templates", `${template.name}.md`);
     if (!fs.existsSync(templatePath)) {
       throw new Error(`Arquivo de template não encontrado: ${templatePath}`);
     }
-
+    
     const content = fs.readFileSync(templatePath, "utf-8");
 
     return content

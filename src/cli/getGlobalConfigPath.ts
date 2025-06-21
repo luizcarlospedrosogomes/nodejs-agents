@@ -1,17 +1,15 @@
 import path from "path";
 import fs from "fs";
-import os from "os";
 
-export function getGlobalConfigPath(): string {
-  const appFolder =
-    process.platform === "win32"
-      ? path.join(process.env.APPDATA || "", "agents")
-      : path.join(os.homedir(), ".config", "agents");
+// Caminho da pasta de configuração dentro do pacote NPM
+export function getGlobalConfigPath() : string {
+  // __dirname aponta para o diretório atual do arquivo, dentro do pacote
+  const configFolder = path.join(__dirname, "config");
 
   // Garante que a pasta exista
-  if (!fs.existsSync(appFolder)) {
-    fs.mkdirSync(appFolder, { recursive: true });
+  if (!fs.existsSync(configFolder)) {
+    fs.mkdirSync(configFolder, { recursive: true });
   }
 
-  return path.join(appFolder, "config.json");
+  return path.join(configFolder, "config.json");
 }

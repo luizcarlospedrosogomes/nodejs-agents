@@ -40,7 +40,7 @@ export function handleCreateTemplate(args: string[], configPath: string): void {
 const configDir = path.dirname(configPath);
 
 // Caminho do diretório de templates (mesmo nível do config.json)
-const templatesDir = path.join(configDir, "templates");
+const templatesDir = path.join(__dirname, "../..", "templates");
 if (!fs.existsSync(templatesDir)) {
   fs.mkdirSync(templatesDir, { recursive: true });
 }
@@ -79,7 +79,7 @@ const templatePath = path.join(templatesDir, `${name}.md`);
   if (!projectEntry) {
     projectEntry = {
       name: project,
-      modelName: "gemini",
+      modelName: "gemini-2.0-flash",
       api_key: "",
       templates: [],
     };

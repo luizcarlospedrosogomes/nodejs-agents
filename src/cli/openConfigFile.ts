@@ -8,7 +8,7 @@ export function openConfigFile(args: any, configPath: string): void {
       projects: [
         {
           name: "default",
-          modelName: "gemini",
+          modelName: "gemini-2.0-flash",
           api_key: "",
           templates: [
             {
